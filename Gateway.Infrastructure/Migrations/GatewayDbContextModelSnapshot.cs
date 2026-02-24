@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gateway.Infrastructure.Database.Migrations
+namespace Gateway.Infrastructure.Migrations
 {
     [DbContext(typeof(GatewayDbContext))]
     partial class GatewayDbContextModelSnapshot : ModelSnapshot
@@ -125,6 +125,147 @@ namespace Gateway.Infrastructure.Database.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("GatewayTransactionLogs", (string)null);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyCluster", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClusterId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("ProxyConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClusterId");
+
+                    b.HasIndex("ProxyConfigId");
+
+                    b.ToTable("ProxyClusters", (string)null);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyConfigRoot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProxyConfigs", (string)null);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyDestination", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DestinationId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid?>("ProxyClusterId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProxyClusterId");
+
+                    b.ToTable("ProxyDestinations", (string)null);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyRoute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AuthorizationPolicy")
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClusterId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PathMatch")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ProxyConfigId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RouteId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProxyConfigId");
+
+                    b.HasIndex("RouteId");
+
+                    b.ToTable("ProxyRoutes", (string)null);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.RouteTransform", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ProxyRouteId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProxyRouteId");
+
+                    b.ToTable("RouteTransforms", (string)null);
                 });
 
             modelBuilder.Entity("Gateway.Infrastructure.Identity.ApplicationUser", b =>
@@ -318,6 +459,39 @@ namespace Gateway.Infrastructure.Database.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyCluster", b =>
+                {
+                    b.HasOne("Gateway.Domain.ProxyConfig.ProxyConfigRoot", null)
+                        .WithMany("Clusters")
+                        .HasForeignKey("ProxyConfigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyDestination", b =>
+                {
+                    b.HasOne("Gateway.Domain.ProxyConfig.ProxyCluster", null)
+                        .WithMany("Destinations")
+                        .HasForeignKey("ProxyClusterId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyRoute", b =>
+                {
+                    b.HasOne("Gateway.Domain.ProxyConfig.ProxyConfigRoot", null)
+                        .WithMany("Routes")
+                        .HasForeignKey("ProxyConfigId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.RouteTransform", b =>
+                {
+                    b.HasOne("Gateway.Domain.ProxyConfig.ProxyRoute", null)
+                        .WithMany("Transforms")
+                        .HasForeignKey("ProxyRouteId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -367,6 +541,23 @@ namespace Gateway.Infrastructure.Database.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyCluster", b =>
+                {
+                    b.Navigation("Destinations");
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyConfigRoot", b =>
+                {
+                    b.Navigation("Clusters");
+
+                    b.Navigation("Routes");
+                });
+
+            modelBuilder.Entity("Gateway.Domain.ProxyConfig.ProxyRoute", b =>
+                {
+                    b.Navigation("Transforms");
                 });
 #pragma warning restore 612, 618
         }

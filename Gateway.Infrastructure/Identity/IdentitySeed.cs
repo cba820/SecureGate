@@ -14,7 +14,7 @@ public static class IdentitySeed {
         }
 
         const string adminUser = "admin";
-        const string adminPass = "4dmInEc3rt.2026@";
+        const string adminPass = "Pass_1234";
 
         var existing = await userManager.FindByNameAsync(adminUser);
         if (existing is null) {

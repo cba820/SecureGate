@@ -25,10 +25,15 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+    <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Gateway.Domain\Gateway.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\Migrations\" />
   </ItemGroup>
 
 </Project>

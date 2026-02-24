@@ -1,14 +1,18 @@
 ﻿using Ardalis.Specification;
+using Gateway.Domain.Abstractions;
 using Gateway.Infrastructure.Database.Context;
 using Gateway.Infrastructure.Database.Options;
 using Gateway.Infrastructure.Database.Repositories;
 using Gateway.Infrastructure.Identity;
+using Gateway.Infrastructure.ProxyConfig;
+using Gateway.Infrastructure.Yarp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Yarp.ReverseProxy.Configuration;
 
-namespace Gateway.Infrastructure.Database;
+namespace Gateway.Infrastructure;
 
 public static class DependencyInjection {
     
@@ -16,6 +20,7 @@ public static class DependencyInjection {
         services.AddGatewayDatabase(config);
         services.AddGatewayRepositories();
         services.AddUnitOfWork();
+        services.AddReverseProxyConfiguration(config);
         return services;
     }
 
@@ -86,6 +91,18 @@ public static class DependencyInjection {
         // Para inyectar IReadRepositoryBase<T> o IRepositoryBase<T>
         services.AddScoped(typeof(IReadRepositoryBase<>), typeof(EfRepository<>));
         services.AddScoped(typeof(IRepositoryBase<>), typeof(EfRepository<>));
+
+        return services;
+    }
+
+    public static IServiceCollection AddReverseProxyConfiguration(this IServiceCollection services, IConfiguration config) {
+        services.Configure<DbProxyConfigProviderOptions>(config.GetSection("ProxyConfigProvider"));
+
+        services.AddScoped<IProxyConfigStore, EfProxyConfigStore>();
+
+        services.AddSingleton<DbProxyConfigProvider>();
+        services.AddSingleton<IProxyConfigProvider>(sp => sp.GetRequiredService<DbProxyConfigProvider>());
+        services.AddHostedService(sp => sp.GetRequiredService<DbProxyConfigProvider>());
 
         return services;
     }

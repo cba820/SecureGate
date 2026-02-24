@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Gateway.Infrastructure.Database.Migrations
+namespace Gateway.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialIdentityAndLogs : Migration
+    public partial class InitialMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -82,6 +82,20 @@ namespace Gateway.Infrastructure.Database.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GatewayTransactionLogs", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProxyConfigs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Version = table.Column<long>(type: "INTEGER", nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProxyConfigs", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,6 +204,90 @@ namespace Gateway.Infrastructure.Database.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProxyClusters",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ProxyConfigId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ClusterId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProxyClusters", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProxyClusters_ProxyConfigs_ProxyConfigId",
+                        column: x => x.ProxyConfigId,
+                        principalTable: "ProxyConfigs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProxyRoutes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    RouteId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    ClusterId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    PathMatch = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    AuthorizationPolicy = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ProxyConfigId = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProxyRoutes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProxyRoutes_ProxyConfigs_ProxyConfigId",
+                        column: x => x.ProxyConfigId,
+                        principalTable: "ProxyConfigs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProxyDestinations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DestinationId = table.Column<string>(type: "TEXT", maxLength: 200, nullable: false),
+                    Address = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ProxyClusterId = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProxyDestinations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProxyDestinations_ProxyClusters_ProxyClusterId",
+                        column: x => x.ProxyClusterId,
+                        principalTable: "ProxyClusters",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RouteTransforms",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Key = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Value = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
+                    ProxyRouteId = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RouteTransforms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RouteTransforms_ProxyRoutes_ProxyRouteId",
+                        column: x => x.ProxyRouteId,
+                        principalTable: "ProxyRoutes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -256,6 +354,36 @@ namespace Gateway.Infrastructure.Database.Migrations
                 name: "IX_GatewayTransactionLogs_UserId",
                 table: "GatewayTransactionLogs",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProxyClusters_ClusterId",
+                table: "ProxyClusters",
+                column: "ClusterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProxyClusters_ProxyConfigId",
+                table: "ProxyClusters",
+                column: "ProxyConfigId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProxyDestinations_ProxyClusterId",
+                table: "ProxyDestinations",
+                column: "ProxyClusterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProxyRoutes_ProxyConfigId",
+                table: "ProxyRoutes",
+                column: "ProxyConfigId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProxyRoutes_RouteId",
+                table: "ProxyRoutes",
+                column: "RouteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RouteTransforms_ProxyRouteId",
+                table: "RouteTransforms",
+                column: "ProxyRouteId");
         }
 
         /// <inheritdoc />
@@ -280,10 +408,25 @@ namespace Gateway.Infrastructure.Database.Migrations
                 name: "GatewayTransactionLogs");
 
             migrationBuilder.DropTable(
+                name: "ProxyDestinations");
+
+            migrationBuilder.DropTable(
+                name: "RouteTransforms");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ProxyClusters");
+
+            migrationBuilder.DropTable(
+                name: "ProxyRoutes");
+
+            migrationBuilder.DropTable(
+                name: "ProxyConfigs");
         }
     }
 }

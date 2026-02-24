@@ -2,8 +2,10 @@
 using Gateway.Api.Endpoints;
 using Gateway.Api.Observability;
 using Gateway.Api.Proxy;
-using Gateway.Infrastructure.Database;
+using Gateway.Infrastructure;
+using Gateway.Infrastructure.Database.Context;
 using Gateway.Infrastructure.Identity;
+using Gateway.Infrastructure.ProxyConfig;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +34,16 @@ builder.Services.AddGatewayTransactionLogging(builder.Configuration);
 
 var app = builder.Build();
 
+var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Startup");
+
+// Auto-migrate (solo Development por defecto)
+await DatabaseMigrator.MigrateAsync<GatewayDbContext>(
+    app.Services,
+    app.Environment,
+    logger,
+    app.Lifetime.ApplicationStopping
+);
+
 // Swagger (MVP)
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -55,6 +67,11 @@ using (var scope = app.Services.CreateScope()) {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
     await IdentitySeed.SeedAsync(userManager, roleManager);
+    await ProxyConfigSeeder.SeedDefaultProxyConfigAsync(
+    app.Services,
+    logger,
+    app.Lifetime.ApplicationStopping
+);
 }
 
 app.Run();
