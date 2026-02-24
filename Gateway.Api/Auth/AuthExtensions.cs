@@ -11,6 +11,7 @@ namespace Gateway.Api.Auth;
 
 public static class AuthExtensions {
     public const string ProxyPolicyName = "ProxyPolicy";
+    public const string AdminPolicyName = "AdminOnly";
 
     public static IServiceCollection AddJwtAuth(this IServiceCollection services, IConfiguration config) {
         services.Configure<JwtOptions>(config.GetSection("Jwt"));
@@ -45,6 +46,12 @@ public static class AuthExtensions {
             o.AddPolicy(ProxyPolicyName, policy => {
                 policy.RequireAuthenticatedUser();
             });
+        });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+                policy.RequireRole("admin")); // o "Admin" según tu rol real
         });
 
         return services;

@@ -9,6 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.Infrastructure", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.Domain", "Gateway.Domain\Gateway.Domain.csproj", "{ECFFEDAF-42B2-B7C9-4D74-FE49F000627F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway.AdminUI", "Gateway.AdminUI\Gateway.AdminUI.csproj", "{4409EE2C-EB08-4083-A2AE-03529D07195C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{D107F4C8-89CC-BEA8-D3D7-CA6B7733353D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +34,10 @@ Global
 		{ECFFEDAF-42B2-B7C9-4D74-FE49F000627F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECFFEDAF-42B2-B7C9-4D74-FE49F000627F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECFFEDAF-42B2-B7C9-4D74-FE49F000627F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4409EE2C-EB08-4083-A2AE-03529D07195C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4409EE2C-EB08-4083-A2AE-03529D07195C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4409EE2C-EB08-4083-A2AE-03529D07195C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4409EE2C-EB08-4083-A2AE-03529D07195C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

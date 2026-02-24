@@ -1,0 +1,172 @@
+/*html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+*/
+body {
+    background: #0b1220;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #0f1b33, #0b1220);
+    border-right: 1px solid rgba(255,255,255,.08);
+}
+
+    .sidebar .brand {
+        letter-spacing: .6px;
+        font-weight: 700;
+    }
+
+.nav-pill {
+    border-radius: 14px;
+    padding: .7rem .9rem;
+    color: rgba(255,255,255,.82);
+}
+
+    .nav-pill:hover {
+        background: rgba(255,255,255,.06);
+        color: #fff;
+    }
+
+    .nav-pill.active {
+        background: rgba(99, 102, 241, .18);
+        color: #fff;
+        border: 1px solid rgba(99,102,241,.25);
+    }
+
+.content {
+    background: radial-gradient(1200px 500px at 30% 0%, rgba(99,102,241,.18), transparent 55%);
+}
+
+.card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 18px;
+}
+
+.muted {
+    color: rgba(255,255,255,.70);
+}
+
+.page-title {
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.btn-soft {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.10);
+    color: #fff;
+}
+
+    .btn-soft:hover {
+        background: rgba(255,255,255,.10);
+    }
+
+/* ===== Tablas dark/glass para todo el Admin ===== */
+.table {
+    /* quita el look blanco default de bootstrap */
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(255,255,255,.03);
+    --bs-table-hover-bg: rgba(255,255,255,.05);
+    --bs-table-border-color: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.86);
+}
+
+    .table thead th {
+        background: rgba(255,255,255,.03);
+        color: rgba(255,255,255,.65);
+        border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+
+    .table tbody tr {
+        background: rgba(255,255,255,.02);
+    }
+
+        .table tbody tr:hover {
+            background: rgba(255,255,255,.05);
+        }
+
+    .table td, .table th {
+        border-color: rgba(255,255,255,.08) !important;
+    }
+
+.table-responsive {
+    border-radius: 16px;
+    overflow: hidden; /* para que el “glass” respete las esquinas */
+}
+
+.form-control, .form-select {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.10);
+    color: #fff;
+    border-radius: 14px;
+}
+
+    .form-control::placeholder {
+        color: rgba(255,255,255,.45);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: rgba(99,102,241,.55);
+        box-shadow: 0 0 0 .2rem rgba(99,102,241,.12);
+    }
+
+.badge-pill {
+    border-radius: 999px;
+    padding: .45rem .6rem;
+}
+
+/* ===== SELECT DARK THEME ===== */
+
+.form-select {
+    background-color: rgba(255,255,255,.05) !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    color: #fff !important;
+    border-radius: 14px;
+}
+
+/* Flecha blanca en modo oscuro */
+.form-select {
+    background-image: linear-gradient(45deg, transparent 50%, rgba(255,255,255,.6) 50%), linear-gradient(135deg, rgba(255,255,255,.6) 50%, transparent 50%), linear-gradient(to right, rgba(255,255,255,.15), rgba(255,255,255,.15));
+    background-position: calc(100% - 20px) calc(1.1em), calc(100% - 15px) calc(1.1em), calc(100% - 2.5em) 0.4em;
+    background-size: 5px 5px, 5px 5px, 1px 1.8em;
+    background-repeat: no-repeat;
+}
+
+    /* Focus más profesional */
+    .form-select:focus {
+        border-color: rgba(99,102,241,.55) !important;
+        box-shadow: 0 0 0 .2rem rgba(99,102,241,.15) !important;
+    }
+
+    /* Disabled */
+    .form-select:disabled {
+        background-color: rgba(255,255,255,.03) !important;
+        color: rgba(255,255,255,.40) !important;
+    }
+
+    /* Opciones internas (cuando se abre el dropdown) */
+    .form-select option {
+        background-color: #0f1b33;
+        color: #fff;
+    }

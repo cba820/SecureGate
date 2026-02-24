@@ -1,0 +1,58 @@
+﻿@using Gateway.AdminUI.Models
+@model LoginVm
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center" style="margin-top:7vh;">
+    <div class="col-12 col-md-8 col-lg-5 col-xxl-4">
+        <div class="card p-4 p-md-5 shadow-lg">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="rounded-4 d-inline-flex align-items-center justify-content-center" style="width:52px;height:52px;background:rgba(99,102,241,.18);border:1px solid rgba(99,102,241,.25);">
+                    <i class="bi bi-shield-lock fs-3"></i>
+                </div>
+                <div>
+                    <div class="page-title fs-4">SecureGate Admin</div>
+                    <div class="muted">Acceso restringido</div>
+                </div>
+            </div>
+
+            <form method="post" class="d-grid gap-3">
+                @Html.AntiForgeryToken()
+
+                <div>
+                    <label class="form-label muted">Email</label>
+                    <input asp-for="Email" class="form-control" placeholder="admin@securegate.local" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div>
+                    <label class="form-label muted">Contraseña</label>
+                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                @if (!ViewData.ModelState.IsValid) {
+                    <div class="small" style="color:#fecaca;">
+                        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors)) {
+                            <div><i class="bi bi-exclamation-circle me-2"></i>@err.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <button class="btn btn-primary btn-lg" style="border-radius:14px;">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
+                </button>
+
+                <div class="muted small mt-2">
+                    Si no tienes acceso, pide a un administrador que te asigne el rol <span class="badge text-bg-secondary badge-pill">Admin</span>.
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

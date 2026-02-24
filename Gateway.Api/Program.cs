@@ -1,4 +1,4 @@
-using Gateway.Api.Auth;
+﻿using Gateway.Api.Auth;
 using Gateway.Api.Endpoints;
 using Gateway.Api.Observability;
 using Gateway.Api.Proxy;
@@ -7,6 +7,9 @@ using Gateway.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Controllers (para Admin endpoints con controladores)
+builder.Services.AddControllers();
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -21,7 +24,7 @@ builder.Services.AddJwtAuth(builder.Configuration);
 // YARP
 builder.Services.AddGatewayProxy(builder.Configuration);
 
-//DependencyInjection de la base de datos (DbContext, repositorios, etc.)
+// DependencyInjection de la base de datos (DbContext, repositorios, etc.)
 builder.Services.AddGatewayInfrastructure(builder.Configuration);
 
 // Logging middleware
@@ -29,7 +32,7 @@ builder.Services.AddGatewayTransactionLogging(builder.Configuration);
 
 var app = builder.Build();
 
-// Swagger (yo lo dejo habilitado siempre para MVP; en prod puedes condicionarlo)
+// Swagger (MVP)
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -41,8 +44,12 @@ app.UseAuthorization();
 
 app.UseGatewayTransactionLogging();
 
+// ✅ Minimal endpoints existentes (NO se rompen)
 app.MapAuthEndpoints();
 app.MapGatewayProxyEndpoints();
+
+// ✅ Controllers (Admin endpoints /_admin/*)
+app.MapControllers();
 
 using (var scope = app.Services.CreateScope()) {
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
