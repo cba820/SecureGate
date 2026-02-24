@@ -21,13 +21,22 @@
             <thead>
                 <tr>
                     <th>Email</th>
-                    <th style="width:30%;">Roles</th>
+                    <th style="width:35%;">Roles</th>
                     <th class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var u in Model.Users) {
                     var roles = Model.UserRoles.TryGetValue(u.Id, out var rr) ? rr : new List<string>();
+
+                    // Roles disponibles para agregar (los que NO tiene actualmente)
+                    var availableToAdd = Model.AllRoles
+                    .Where(r => !roles.Contains(r))
+                    .ToList();
+
+                    // Id seguro para el modal
+                    var safeId = ("roles_" + u.Id).Replace("-", "").Replace(":", "").Replace(".", "");
+
                     <tr>
                         <td>
                             <div class="fw-semibold">@u.Email</div>
@@ -46,45 +55,158 @@
                                 }
                             </div>
 
-                            <div class="mt-3 d-flex gap-2">
-                                <form method="post" action="@Url.Action("AddRole","Users")" class="d-flex gap-2">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="userId" value="@u.Id" />
-                                    <select class="form-select form-select-sm" name="roleName" style="min-width:160px;">
-                                        @foreach (var r in Model.AllRoles) {
-                                            <option value="@r">@r</option>
-                                        }
-                                    </select>
-                                    <button class="btn btn-sm btn-soft" style="border-radius:12px;">
-                                        <i class="bi bi-plus-lg me-1"></i> Asignar
-                                    </button>
-                                </form>
-
-                                <form method="post" action="@Url.Action("RemoveRole","Users")" class="d-flex gap-2">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="userId" value="@u.Id" />
-                                    <select class="form-select form-select-sm" name="roleName" style="min-width:160px;">
-                                        @foreach (var r in roles) {
-                                            <option value="@r">@r</option>
-                                        }
-                                    </select>
-                                    <button class="btn btn-sm btn-soft" style="border-radius:12px;" @(roles.Count == 0 ? "disabled" : "")>
-                                        <i class="bi bi-dash-lg me-1"></i> Quitar
-                                    </button>
-                                </form>
+                            <div class="muted small mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Los roles se administran desde el modal (mínimo 1 rol por usuario).
                             </div>
                         </td>
 
                         <td class="text-end">
-                            <form method="post" action="@Url.Action("Delete","Users")" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@u.Id" />
-                                <button class="btn btn-sm btn-soft" style="border-radius:12px;" onclick="return confirm('¿Eliminar usuario @u.Email?');">
-                                    <i class="bi bi-trash3 me-1"></i> Eliminar
+                            <div class="d-inline-flex gap-2">
+                                <button class="btn btn-sm btn-soft" style="border-radius:12px;"
+                                        data-bs-toggle="modal" data-bs-target="#@safeId">
+                                    <i class="bi bi-shield-check me-1"></i> Administrar roles
                                 </button>
-                            </form>
+
+                                <form method="post" action="@Url.Action("Delete","Users")" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <button class="btn btn-sm btn-soft" style="border-radius:12px;"
+                                            onclick="return confirm('¿Eliminar usuario @u.Email?');">
+                                        <i class="bi bi-trash3 me-1"></i> Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
+
+                    <!-- Modal Administrar Roles (por usuario) -->
+                    <div class="modal fade" id="@safeId" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content text-white"
+                                 style="background:#0f1b33;border:1px solid rgba(255,255,255,.10);border-radius:18px;">
+                                <div class="modal-header border-0">
+                                    <div>
+                                        <h5 class="modal-title mb-1">Administrar roles</h5>
+                                        <div class="muted small">
+                                            <i class="bi bi-person me-1"></i> @u.Email
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="row g-3">
+                                        <!-- Roles actuales -->
+                                        <div class="col-12 col-lg-6">
+                                            <div class="card p-3" style="border-radius:16px;">
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <div class="fw-semibold">
+                                                        <i class="bi bi-tags me-2"></i>Roles actuales
+                                                    </div>
+                                                    <span class="badge text-bg-secondary badge-pill">
+                                                        @roles.Count
+                                                    </span>
+                                                </div>
+
+                                                @if (roles.Count == 0) {
+                                                    <div class="muted small">Este usuario no tiene roles. Asigna uno para continuar.</div>
+                                                }
+                                                else {
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        @foreach (var r in roles) {
+                                                            var disableRemove = roles.Count <= 1; // regla: mínimo 1 rol
+
+                                                            <form method="post"
+                                                                  action="@Url.Action("RemoveRole","Users")"
+                                                                  class="d-inline-flex align-items-center">
+                                                                @Html.AntiForgeryToken()
+                                                                <input type="hidden" name="userId" value="@u.Id" />
+                                                                <input type="hidden" name="roleName" value="@r" />
+
+                                                                <span class="badge text-bg-secondary badge-pill d-inline-flex align-items-center gap-2">
+                                                                    @r
+
+                                                                    <button type="submit"
+                                                                            class="btn btn-sm p-0 border-0 text-white"
+                                                                            style="line-height:1; background:transparent;"
+                                                                            title="Quitar rol"
+                                                                            @(disableRemove ? "disabled" : "")
+                                                                            onclick="return @((disableRemove) ? "false" : $"confirm('¿Quitar el rol {r} a {u.Email}?');")">
+                                                                        <i class="bi bi-x-lg"></i>
+                                                                    </button>
+                                                                </span>
+                                                            </form>
+                                                        }
+                                                    </div>
+
+                                                    @if (roles.Count <= 1) {
+                                                        <div class="muted small mt-3">
+                                                            <i class="bi bi-lock me-1"></i>
+                                                            Este usuario debe conservar al menos <b>1 rol</b>. Agrega otro rol antes de quitar el actual.
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Agregar rol -->
+                                        <div class="col-12 col-lg-6">
+                                            <div class="card p-3" style="border-radius:16px;">
+                                                <div class="fw-semibold mb-2">
+                                                    <i class="bi bi-plus-circle me-2"></i>Agregar rol
+                                                </div>
+
+                                                @if (availableToAdd.Count == 0) {
+                                                    <div class="muted small">
+                                                        Este usuario ya tiene todos los roles disponibles.
+                                                    </div>
+                                                }
+                                                else {
+                                                    <form method="post" action="@Url.Action("AddRole","Users")" class="d-flex gap-2 align-items-end">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="userId" value="@u.Id" />
+
+                                                        <div class="flex-grow-1">
+                                                            <label class="form-label muted small mb-1">Selecciona un rol</label>
+                                                            <select class="form-select" name="roleName">
+                                                                @foreach (var r in availableToAdd) {
+                                                                    <option value="@r">@r</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+
+                                                        <button class="btn btn-primary" style="border-radius:14px;">
+                                                            <i class="bi bi-check2 me-2"></i>Agregar
+                                                        </button>
+                                                    </form>
+
+                                                    <div class="muted small mt-3">
+                                                        <i class="bi bi-lightning-charge me-1"></i>
+                                                        Tip: agrega el rol “Admin” solo a quienes gestionan el gateway.
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Footer helper -->
+                                        <div class="col-12">
+                                            <div class="muted small">
+                                                <i class="bi bi-shield-lock me-1"></i>
+                                                Recomendación: mantén roles mínimos y usa el principio de menor privilegio.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer border-0">
+                                    <button type="button" class="btn btn-soft" data-bs-dismiss="modal" style="border-radius:14px;">
+                                        Cerrar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 }
             </tbody>
         </table>
