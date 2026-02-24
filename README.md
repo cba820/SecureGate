@@ -50,6 +50,36 @@
 
 ------------------------------------------------------------------------
 
+## 🖥️ Frontend – Admin Console (SecureGate)
+
+El proyecto incluye una consola administrativa web desarrollada en **ASP.NET Core MVC** para la gestión de identidad y autorización del gateway.
+
+### 👥 Gestión de Usuarios
+- Creación de usuarios con email y contraseña.
+- Eliminación de usuarios.
+- Visualización de identificador único (User ID).
+- Interfaz profesional basada en modales y validaciones integradas.
+
+### 🛡️ Gestión de Roles
+- Creación y administración de roles del sistema.
+- Visualización centralizada de roles disponibles.
+- Asociación dinámica entre usuarios y roles.
+
+### 🔐 Asignación de Roles
+- Administración de roles desde un modal dedicado por usuario.
+- Visualización clara de roles actuales mediante *badges*.
+- Asignación de nuevos roles desde lista filtrada (solo roles no asignados).
+- Eliminación de roles mediante acción directa sobre cada badge.
+- Regla de negocio aplicada en UI: **todo usuario debe tener al menos un rol asignado** (no se permite eliminar el último rol).
+
+### 🎨 Enfoque UX/UI
+- Diseño consistente con tema oscuro profesional.
+- Uso de modales para evitar navegación innecesaria.
+- Prevención de estados inválidos mediante validaciones visuales.
+- Aplicación del principio de menor privilegio como recomendación contextual.
+
+------------------------------------------------------------------------
+
 # 👤 Usuarios y Roles
 
 Se utiliza ASP.NET Core Identity:
